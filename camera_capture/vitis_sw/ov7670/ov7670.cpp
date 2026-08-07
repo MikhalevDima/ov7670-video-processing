@@ -1,5 +1,12 @@
-#include "ov7670.hpp"
+// =================================================================
+// Project: OV7670 Video Processing System
+// File: ov7670.cpp
+// Description: Driver class for OV7670 camera configuration via I2C
+// Developer: MikhalevDima
+// Year: 2026
+// =================================================================
 
+#include "ov7670.hpp"
 
 // Конструктор
 ov7670::ov7670(I2C& I2C_interface, uint8_t ADDR_uint, uint32_t ADDR_base)
