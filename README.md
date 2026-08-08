@@ -11,3 +11,4 @@
 <img width="1854" height="667" alt="BlockDesign" src="https://github.com/user-attachments/assets/46265977-db15-4f2c-8f72-15acc2e0f8c4" />
 
 ### Описание реализованных IP модулей
+1. **camera_capture (SystemVerilog):** Захват видеопотока с камеры ov7670 в формате YUV. Преобразование в формат RGB888 и передача видеопотока по AXI-STREAM на следующий модуль обработки.
