@@ -14,4 +14,5 @@
 1. **camera_capture (SystemVerilog):** Захват видеопотока с камеры ov7670 в формате YUV. Преобразование в формат RGB888 и передача видеопотока по AXI-STREAM на следующий модуль обработки.
 2. **I2C (C++):** Настройка модуля, находящегося в ARM XC7Z020CLG400-2, для инициализации камеры ov7670.
 3. **GenericInterruptController (С++):** Настройка контроллера прерываний GIC.
-4. **GausseFilterSystemVerilog (SystemVerilog):** Модуль фильтра Гаусса с окном 3х3.   
+4. **GaussFilterSystemVerilog (SystemVerilog):** Модуль фильтра Гаусса с окном 3х3.
+5. **MyScreen (SystemVerilog):** Модуль, который выдаёт видеопоток типа "шахматная доска" по AXI-STREAM.    
