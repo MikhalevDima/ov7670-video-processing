@@ -23,8 +23,10 @@
 ### Программная часть (ARM Cortex-A9 / Processing System)
 #### drivers (C++ / Vitis):
   1. **ov7670_camera:** Драйвер конфигурации камеры ov7670 по I2C.
-  2. **I2C:** Инициализация интерфейса I2C в Zynq.
+  2. **MyScreen:** Драйвер конфигурации модуля MyScreen.
+  3. **MedianFilter_hls:** Драйвер конфигурации модуля MedianFilter и методы управления данным модулем.
 #### platform:
   1. **GenericInterruptController:** Инициализация подсистемы аппаратных прерываний.
+  2. **I2C:** Инициализация интерфейса I2C в Zynq.
 
  
