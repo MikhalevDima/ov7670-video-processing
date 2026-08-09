@@ -31,5 +31,6 @@
   3. **UART:** Инициализация интерфейса UART в Zynq.
   4. **VideoDirectMemoryAccess:** Настройка и инициализация VDMA. Буфер в три кадра в DDR.
   5. **VideoMixer:** Модуль смешивает изображения с камеры ov7670 и с VideoTestPatternGenerator. На выходе фон с видеопоток с ov7670 с разрешение 1080p.
+  6. **VideoTestPatternGenerator:** Создаём фон с разрешение 1080р, в VideoMixer смешиваем с видеопотоком от ov7670.
 
  
