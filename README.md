@@ -19,12 +19,14 @@
   3. **MyScreen:** Модуль, который выдаёт видеопоток типа "шахматная доска" по AXI-STREAM.     
 #### hls_ip_blocks (C++ / Vitis HLS):
   1. **MedianFilter:** Модуль медианного фильтра с окном 3х3, с возможность динамической настройки порога через AXILite.
+  2. **StreamToStream:** Модуль принимает поток пикселей по AXI-STREAM и тут же передаёт их по AXI-STREAM.
       
 ### Программная часть (ARM Cortex-A9 / Processing System)
 #### drivers (C++ / Vitis):
   1. **ov7670_camera:** Драйвер конфигурации камеры ov7670 по I2C.
   2. **MyScreen:** Драйвер конфигурации модуля MyScreen.
   3. **MedianFilter_hls:** Драйвер конфигурации модуля MedianFilter и методы управления данным модулем.
+  4. **StreamToStream:** Драйвер конфигурации модуля StreamToStream. Старт, Стоп.
 #### platform:
   1. **GenericInterruptController:** Инициализация подсистемы аппаратных прерываний.
   2. **I2C:** Инициализация интерфейса I2C в Zynq.
