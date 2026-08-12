@@ -10,11 +10,11 @@ int const HEIGHT = 480;
 typedef ap_axiu<24, 1, 1, 1> video_pixel;
 typedef hls::stream<video_pixel> video_stream;
 
-// Переводим згачение int в float
+// РџРµСЂРµРІРѕРґРёРј Р·РіР°С‡РµРЅРёРµ int РІ float
 typedef ap_fixed<8, 4> coeff_K;
 
 
-// Структура для хранения пикселя
+// РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РїРёРєСЃРµР»СЏ
 struct rgb_data {
 	ap_uint<8> r;
 	ap_uint<8> g;
@@ -30,63 +30,63 @@ void AdvancedDDE (video_stream& stream_in, video_stream& stream_out, ap_uint<8> 
 #pragma HLS INTERFACE mode=s_axilite port=K_lut bundle=CTRL_BUS
 #pragma HLS INTERFACE mode=s_axilite port=return bundle=CTRL_BUS
 
-// Говорим, что память должна быть расположена в LUT и доступна за один такт
+// Р“РѕРІРѕСЂРёРј, С‡С‚Рѕ РїР°РјСЏС‚СЊ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ СЂР°СЃРїРѕР»РѕР¶РµРЅР° РІ LUT Рё РґРѕСЃС‚СѓРїРЅР° Р·Р° РѕРґРёРЅ С‚Р°РєС‚
 #pragma HLS RESOURCE variable=base_lut core=RAM_1P_LUTRAM
 #pragma HLS RESOURCE variable=K_lut core=RAM_1P_LUTRAM
 
 
-	// Строчный буфер 2 строки
+	// РЎС‚СЂРѕС‡РЅС‹Р№ Р±СѓС„РµСЂ 2 СЃС‚СЂРѕРєРё
 	ap_uint<8> linebuffer[2][WIDTH];
 	#pragma HLS ARRAY_PARTITION variable=linebuffer complete dim=1
 
-	// Буфер для окна
+	// Р‘СѓС„РµСЂ РґР»СЏ РѕРєРЅР°
 	ap_uint<8> window[3][3];
 	#pragma HLS ARRAY_PARTITION variable=window complete dim=0
 
-	// Читаем кадр
+	// Р§РёС‚Р°РµРј РєР°РґСЂ
 	video_row: for(int r = 0; r < HEIGHT; r++){
 		video_col: for(int c = 0; c < WIDTH; c++){
 			#pragma HLS PIPELINE II=1
 
-			// Выходной пиксель
+			// Р’С‹С…РѕРґРЅРѕР№ РїРёРєСЃРµР»СЊ
 			video_pixel pixel_of_stream_out;
 
-			// Читаем пиксель из входного потока
+			// Р§РёС‚Р°РµРј РїРёРєСЃРµР»СЊ РёР· РІС…РѕРґРЅРѕРіРѕ РїРѕС‚РѕРєР°
 			ap_uint<8> pixel_in;
 			video_pixel pixel_of_stream_in;
 			stream_in.read(pixel_of_stream_in);
-			pixel_in = pixel_of_stream_in.data.range(23, 16);	// Читаем только зелёный канал
+			pixel_in = pixel_of_stream_in.data.range(23, 16);	// Р§РёС‚Р°РµРј С‚РѕР»СЊРєРѕ Р·РµР»С‘РЅС‹Р№ РєР°РЅР°Р»
 
 
-			// Сохраняем принятый пиксель в линейный буфер
+			// РЎРѕС…СЂР°РЅСЏРµРј РїСЂРёРЅСЏС‚С‹Р№ РїРёРєСЃРµР»СЊ РІ Р»РёРЅРµР№РЅС‹Р№ Р±СѓС„РµСЂ
 			ap_uint<8> r0;
 			ap_uint<8> r1;
 
-			r0 = linebuffer[0][c];	// Сохраняем значение первого линейного буфера
-			r1 = linebuffer[1][c];	// Сохраняем значение второго линейного буфера
+			r0 = linebuffer[0][c];	// РЎРѕС…СЂР°РЅСЏРµРј Р·РЅР°С‡РµРЅРёРµ РїРµСЂРІРѕРіРѕ Р»РёРЅРµР№РЅРѕРіРѕ Р±СѓС„РµСЂР°
+			r1 = linebuffer[1][c];	// РЎРѕС…СЂР°РЅСЏРµРј Р·РЅР°С‡РµРЅРёРµ РІС‚РѕСЂРѕРіРѕ Р»РёРЅРµР№РЅРѕРіРѕ Р±СѓС„РµСЂР°
 
-			// Обновляем буфер
+			// РћР±РЅРѕРІР»СЏРµРј Р±СѓС„РµСЂ
 			linebuffer[0][c] = r1;
 			linebuffer[1][c] = pixel_in;
 
-			// Заполняем окно пикселями
-			// 1. Сдвигаем значение в окне в право
+			// Р—Р°РїРѕР»РЅСЏРµРј РѕРєРЅРѕ РїРёРєСЃРµР»СЏРјРё
+			// 1. РЎРґРІРёРіР°РµРј Р·РЅР°С‡РµРЅРёРµ РІ РѕРєРЅРµ РІ РїСЂР°РІРѕ
 			for(int i = 0; i < 3; i++){
 				#pragma HLS UNROLL
 				window[i][0] = window[i][1];
 				window[i][1] = window[i][2];
 			}
 
-			// 2. Заполняем окно
+			// 2. Р—Р°РїРѕР»РЅСЏРµРј РѕРєРЅРѕ
 			window[0][2] = r0;
 			window[1][2] = r1;
 			window[2][2] = pixel_in;
 
 
-			// TO DO сделать обработку краёв
+			// TO DO СЃРґРµР»Р°С‚СЊ РѕР±СЂР°Р±РѕС‚РєСѓ РєСЂР°С‘РІ
 			if(r >= 2 && c >= 2) {
 
-				// 1. Простое размытие (3х3 boxing фильтр)
+				// 1. РџСЂРѕСЃС‚РѕРµ СЂР°Р·РјС‹С‚РёРµ (3С…3 boxing С„РёР»СЊС‚СЂ)
 				int sum = 0;
 				for(int i = 0; i < 3; i++) {
 					for(int j = 0; j < 3; j++){
@@ -95,38 +95,38 @@ void AdvancedDDE (video_stream& stream_in, video_stream& stream_out, ap_uint<8> 
 				}
 				ap_uint<8> blur = sum / 9;
 
-				// 2. Выделение деталей (оригинал находится в центре она)
+				// 2. Р’С‹РґРµР»РµРЅРёРµ РґРµС‚Р°Р»РµР№ (РѕСЂРёРіРёРЅР°Р» РЅР°С…РѕРґРёС‚СЃСЏ РІ С†РµРЅС‚СЂРµ РѕРЅР°)
 				ap_uint<8> orig = window[1][1];
 				int detalis = (int)orig - (int)blur;
 
-				// 3. Считаем локальную контрасность в окне 3х3
+				// 3. РЎС‡РёС‚Р°РµРј Р»РѕРєР°Р»СЊРЅСѓСЋ РєРѕРЅС‚СЂР°СЃРЅРѕСЃС‚СЊ РІ РѕРєРЅРµ 3С…3
 				int local_variance = 0;
 				for(int i = 0; i < 3; i++){
 					for(int j = 0; j < 3; j++){
 						local_variance += hls::abs((int)orig - (int)window[i][j]);
 					}
 				}
-				// 4. Ограничение локальной контрастности до 255
+				// 4. РћРіСЂР°РЅРёС‡РµРЅРёРµ Р»РѕРєР°Р»СЊРЅРѕР№ РєРѕРЅС‚СЂР°СЃС‚РЅРѕСЃС‚Рё РґРѕ 255
 				ap_uint<8> var_index = (local_variance > 255) ? 255 : local_variance;
 
-				// 5. По индексу из K_lut читаем коэффициент, и делем на 16 (т.к. в Vitis *16)
+				// 5. РџРѕ РёРЅРґРµРєСЃСѓ РёР· K_lut С‡РёС‚Р°РµРј РєРѕСЌС„С„РёС†РёРµРЅС‚, Рё РґРµР»РµРј РЅР° 16 (С‚.Рє. РІ Vitis *16)
 				int K_raw = K_lut[var_index];
 				coeff_K K;
-				K.range(7, 0) = K_raw; // Превращаем в дробное число деля на 16
+				K.range(7, 0) = K_raw; // РџСЂРµРІСЂР°С‰Р°РµРј РІ РґСЂРѕР±РЅРѕРµ С‡РёСЃР»Рѕ РґРµР»СЏ РЅР° 16
 
-				// 6. Читаем динамический диапазон из base_lut по индексу blur
+				// 6. Р§РёС‚Р°РµРј РґРёРЅР°РјРёС‡РµСЃРєРёР№ РґРёР°РїР°Р·РѕРЅ РёР· base_lut РїРѕ РёРЅРґРµРєСЃСѓ blur
 				ap_uint<8> compress_base = base_lut[blur];
 
 
-				// 7. Усиление деталей
+				// 7. РЈСЃРёР»РµРЅРёРµ РґРµС‚Р°Р»РµР№
 				int enhanced = (int)compress_base + (int)(K * detalis);
 
-				// 8. Ограничение диапазона (Clipping)
+				// 8. РћРіСЂР°РЅРёС‡РµРЅРёРµ РґРёР°РїР°Р·РѕРЅР° (Clipping)
 				if(enhanced > 255) enhanced = 255;
 				if(enhanced < 0) enhanced = 0;
 
 
-				// Собираем обратно поток RGB888
+				// РЎРѕР±РёСЂР°РµРј РѕР±СЂР°С‚РЅРѕ РїРѕС‚РѕРє RGB888
 				ap_uint<24> pixel_rgb;
 				pixel_rgb.range(23, 16) = enhanced;
 				pixel_rgb.range(15, 8) = enhanced;
@@ -134,11 +134,11 @@ void AdvancedDDE (video_stream& stream_in, video_stream& stream_out, ap_uint<8> 
 				pixel_of_stream_out.data = pixel_rgb;
 
 			} else {
-				// На краях оставляем пиксели без изменений
+				// РќР° РєСЂР°СЏС… РѕСЃС‚Р°РІР»СЏРµРј РїРёРєСЃРµР»Рё Р±РµР· РёР·РјРµРЅРµРЅРёР№
 				pixel_of_stream_out.data = pixel_of_stream_in.data;
 			}
 
-			// Формирование выходного пакета
+			// Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РІС‹С…РѕРґРЅРѕРіРѕ РїР°РєРµС‚Р°
 			pixel_of_stream_out.keep = pixel_of_stream_in.keep;
 			pixel_of_stream_out.strb = pixel_of_stream_in.strb;
 			pixel_of_stream_out.user = pixel_of_stream_in.user;
